@@ -21,19 +21,19 @@ if [ ! -d "/etc/wireguard" ]; then
   mkdir -p /etc/wireguard
 fi
 
-# Gerar o arquivo de configuração wg0.conf
+# Gerar o arquivo de configuração wg0.conf (apenas IPv4)
 cat << EOF > /etc/wireguard/wg0.conf
 [Interface]
 PrivateKey = OJ/ytNFUAEBcKSi8H7+7M/uk0lsLIjWdkj9Vxa6K6ks=
 Address = 172.16.0.2/32
-DNS = 1.1.1.1, 1.0.0.1
+DNS = 1.1.1.1
 MTU = 1280
 PostUp = ip rule add from $IP_PUBLICO lookup main
 PostDown = ip rule delete from $IP_PUBLICO lookup main
 
 [Peer]
 PublicKey = bmXOC+F1FxEMF9dyiK2H5/1SUtzH0JuVo51h2wPfgyo=
-AllowedIPs = 0.0.0.0/0, ::/0
+AllowedIPs = 0.0.0.0/0  # Apenas IPv4
 Endpoint = engage.cloudflareclient.com:2408
 EOF
 
