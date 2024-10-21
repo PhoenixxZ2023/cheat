@@ -8,9 +8,44 @@ fi
 
 echo "Configurando limites de arquivos e ajustes adicionais..."
 
-# Verificar e instalar pacotes necessários
-if ! dpkg -l | grep -q wireguard; then
-  sudo apt update && sudo apt install wireguard resolvconf curl -y
+# Detectar se o sistema é Ubuntu ou Debian
+if [ -f /etc/os-release ]; then
+  . /etc/os-release
+  OS=$ID
+  VERSION_ID=$(echo "$VERSION_ID" | cut -d'.' -f1)
+else
+  echo "Sistema operacional não suportado."
+  exit 1
+fi
+
+# Função para instalar o WireGuard no Ubuntu (usando PPA)
+instalar_wireguard_ubuntu() {
+  sudo apt update
+  sudo apt install software-properties-common -y
+  sudo add-apt-repository ppa:wireguard/wireguard -y
+  sudo apt update
+  sudo apt install wireguard resolvconf curl -y
+}
+
+# Função para instalar o WireGuard no Debian (usando Backports)
+instalar_wireguard_debian() {
+  sudo apt update
+  echo "deb http://deb.debian.org/debian $(lsb_release -cs)-backports main" | sudo tee /etc/apt/sources.list.d/backports.list
+  sudo apt update
+  sudo apt install wireguard resolvconf curl -y
+}
+
+# Verificar se é Ubuntu 20 ou 22
+if [ "$OS" = "ubuntu" ] && { [ "$VERSION_ID" -eq 20 ] || [ "$VERSION_ID" -eq 22 ]; }; then
+  instalar_wireguard_ubuntu
+
+# Verificar se é Debian 10 ou 11 ou superior
+elif [ "$OS" = "debian" ] && { [ "$VERSION_ID" -ge 10 ]; }; then
+  instalar_wireguard_debian
+
+else
+  echo "Este script suporta apenas Ubuntu 20, 22 e Debian 10 ou superior."
+  exit 1
 fi
 
 # Captura do IP público
@@ -25,15 +60,15 @@ fi
 cat << EOF > /etc/wireguard/wg0.conf
 [Interface]
 PrivateKey = OJ/ytNFUAEBcKSi8H7+7M/uk0lsLIjWdkj9Vxa6K6ks=
-Address = 172.16.0.2/32
-DNS = 1.1.1.1
+Address = 172.16.0.2/32  # Endereço IPv4
+DNS = 1.1.1.1, 1.0.0.1   # DNS IPv4
 MTU = 1280
 PostUp = ip rule add from $IP_PUBLICO lookup main
 PostDown = ip rule delete from $IP_PUBLICO lookup main
 
 [Peer]
 PublicKey = bmXOC+F1FxEMF9dyiK2H5/1SUtzH0JuVo51h2wPfgyo=
-AllowedIPs = 0.0.0.0/0  # Apenas IPv4
+AllowedIPs = 0.0.0.0/0  # Apenas IPv4 permitido
 Endpoint = engage.cloudflareclient.com:2408
 EOF
 
