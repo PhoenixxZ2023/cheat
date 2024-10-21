@@ -62,7 +62,7 @@ cat << EOF > /etc/wireguard/wg0.conf
 PrivateKey = OJ/ytNFUAEBcKSi8H7+7M/uk0lsLIjWdkj9Vxa6K6ks=
 Address = 172.16.0.2/32  # Endereço IPv4
 DNS = 1.1.1.1, 1.0.0.1   # DNS IPv4
-MTU = 1400
+MTU = 1450
 PostUp = ip rule add from $IP_PUBLICO lookup main
 PostDown = ip rule delete from $IP_PUBLICO lookup main
 
