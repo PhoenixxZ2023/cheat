@@ -29,9 +29,7 @@ instalar_wireguard_ubuntu() {
 
 # Função para instalar o WireGuard no Debian (usando Backports)
 instalar_wireguard_debian() {
-  sudo apt update
   echo "deb http://deb.debian.org/debian $(lsb_release -cs)-backports main" | sudo tee /etc/apt/sources.list.d/backports.list
-  sudo apt update
   sudo apt install wireguard resolvconf curl -y
 }
 
