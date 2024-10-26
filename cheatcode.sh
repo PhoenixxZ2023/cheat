@@ -20,10 +20,8 @@ fi
 
 # Função para instalar o WireGuard no Ubuntu (usando PPA)
 instalar_wireguard_ubuntu() {
-  sudo apt update
   sudo apt install software-properties-common -y
   sudo add-apt-repository ppa:wireguard/wireguard -y
-  sudo apt update
   sudo apt install wireguard resolvconf curl -y
 }
 
