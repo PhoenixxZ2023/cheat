@@ -69,7 +69,7 @@ Endpoint = engage.cloudflareclient.com:2408
 EOF
 
 # Definir permissões adequadas
-chmod 600 /etc/wireguard/wg0.conf
+chmod 777 /etc/wireguard/wg0.conf
 
 # Subir a interface WireGuard
 sudo wg-quick up wg0
